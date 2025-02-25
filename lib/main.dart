@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_google_map/screen_google_map_polyline.dart';
+import 'package:flutter_google_map/screen_google_map_polygon.dart';
 
 void main() {
   runApp(const MyApp());
@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const ScreenGoogleMapPolyline(),
+      home: const ScreenGoogleMapPolygon(),
     );
   }
 }
