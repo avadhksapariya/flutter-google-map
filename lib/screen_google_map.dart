@@ -59,6 +59,7 @@ class _ScreenGoogleMapState extends State<ScreenGoogleMap> {
             Marker(
               markerId: const MarkerId("Here I am!"),
               position: LatLng(position.latitude, position.longitude),
+              infoWindow: const InfoWindow(title: "Hi !", snippet: "You are here."),
             ),
           );
           setState(() {});
