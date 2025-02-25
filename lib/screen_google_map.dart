@@ -24,6 +24,9 @@ class _ScreenGoogleMapState extends State<ScreenGoogleMap> {
             Marker(
               markerId: const MarkerId("Marker Id"),
               position: myCurrentLocation,
+              draggable: true,
+              onDragEnd: (value) {},
+              infoWindow: const InfoWindow(title: "MarkerTitle", snippet: "MarkerInfo."),
             ),
           }),
     );
