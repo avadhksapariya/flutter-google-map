@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.flutter_google_map"
+    namespace = "com.apexavadh.flutter_google_map"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
