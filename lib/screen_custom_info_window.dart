@@ -51,6 +51,9 @@ class _ScreenCustomInfoWindowState extends State<ScreenCustomInfoWindow> {
             onMapCreated: (controller) {
               csInfoWindowController.googleMapController = controller;
             },
+            onCameraIdle: () {
+              csInfoWindowController.hideInfoWindow!();
+            },
           ),
           CustomInfoWindow(
             controller: csInfoWindowController,
