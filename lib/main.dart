@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_google_map/screen_custom_info_window.dart';
+import 'package:flutter_google_map/screen_google_map.dart';
 
 void main() {
   runApp(const MyApp());
@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const ScreenCustomInfoWindow(),
+      home: const ScreenGoogleMap(),
     );
   }
 }
