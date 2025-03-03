@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_google_map/screen_custom_info_window.dart';
 import 'package:flutter_google_map/screen_google_map_polygon.dart';
 import 'package:flutter_google_map/screen_google_map_polyline.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -21,30 +22,74 @@ class _ScreenGoogleMapState extends State<ScreenGoogleMap> {
   BitmapDescriptor customIcon = BitmapDescriptor.defaultMarker;
   bool showOptions = false;
 
+  final TextEditingController searchController = TextEditingController();
+
+  @override
+  void dispose() {
+    googleMapController.dispose();
+    searchController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
-      body: GoogleMap(
-        myLocationButtonEnabled: false,
-        initialCameraPosition: CameraPosition(
-          target: myCurrentLocation,
-          zoom: 15,
-        ),
-        markers: marker,
-        onMapCreated: (GoogleMapController controller) {
-          googleMapController = controller;
-        },
-        /*markers: {
-          Marker(
-            markerId: const MarkerId("Marker Id"),
-            position: myCurrentLocation,
-            draggable: true,
-            onDragEnd: (value) {},
-            infoWindow: const InfoWindow(title: "MarkerTitle", snippet: "MarkerInfo."),
-            // icon: customIcon, // disabled due to too big asset, if needed define customMarker() in initState
+      body: Stack(
+        children: [
+          GoogleMap(
+            myLocationButtonEnabled: false,
+            initialCameraPosition: CameraPosition(
+              target: myCurrentLocation,
+              zoom: 15,
+            ),
+            markers: marker,
+            onMapCreated: (GoogleMapController controller) {
+              googleMapController = controller;
+            },
+            /*markers: {
+            Marker(
+              markerId: const MarkerId("Marker Id"),
+              position: myCurrentLocation,
+              draggable: true,
+              onDragEnd: (value) {},
+              infoWindow: const InfoWindow(title: "MarkerTitle", snippet: "MarkerInfo."),
+              // icon: customIcon, // disabled due to too big asset, if needed define customMarker() in initState
+            ),
+          },*/
           ),
-        },*/
+          Positioned(
+            top: 40,
+            right: 8,
+            left: 8,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextField(
+                controller: searchController,
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: Colors.white,
+                  hintText: 'Search...',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30),
+                    borderSide: BorderSide.none,
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 20),
+                  suffixIcon: IconButton(
+                    onPressed: () {
+                      final location = searchController.text.trim();
+                      if (location.isNotEmpty) {
+                        searchPlace(location);
+                      }
+                    },
+                    style: IconButton.styleFrom(backgroundColor: Colors.white),
+                    icon: const Icon(Icons.search),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
       floatingActionButton: Column(
         mainAxisAlignment: MainAxisAlignment.end,
@@ -110,6 +155,8 @@ class _ScreenGoogleMapState extends State<ScreenGoogleMap> {
                     foregroundColor: Colors.red.shade700,
                     backgroundColor: Colors.white,
                     onPressed: () async {
+                      searchController.clear();
+
                       Position position = await currentPosition();
                       googleMapController.animateCamera(
                         CameraUpdate.newCameraPosition(
@@ -180,6 +227,36 @@ class _ScreenGoogleMapState extends State<ScreenGoogleMap> {
 
     Position position = await Geolocator.getCurrentPosition();
     return position;
+  }
+
+  Future<void> searchPlace(String place) async {
+    try {
+      List<Location> locations = await locationFromAddress(place);
+      if (locations.isNotEmpty) {
+        Location location = locations.first;
+        LatLng searchedLatLng = LatLng(location.latitude, location.longitude);
+
+        // Move the map camera to the searched location
+        googleMapController.animateCamera(CameraUpdate.newLatLng(searchedLatLng));
+
+        // Add the marker on searched place
+        marker.clear();
+        marker.add(
+          Marker(
+            markerId: const MarkerId("searchedPlace"),
+            position: searchedLatLng,
+            infoWindow: InfoWindow(title: place, snippet: "Lat: ${location.latitude}, Lng: ${location.longitude}"),
+          ),
+        );
+
+        setState(() {});
+      } else {
+        log("Could not find the place.");
+        return;
+      }
+    } catch (e) {
+      log("Error finding place: $e");
+    }
   }
 
   void toggleOptions() {
