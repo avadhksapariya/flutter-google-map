@@ -55,7 +55,7 @@ class _ScreenGoogleMapPolygonState extends State<ScreenGoogleMapPolygon> {
         points: points,
         strokeColor: Colors.blueAccent,
         strokeWidth: 2,
-        fillColor: Colors.green.withOpacity(0.1),
+        fillColor: Colors.green.withValues(alpha: 0.1),
         geodesic: true,
       ),
     );
